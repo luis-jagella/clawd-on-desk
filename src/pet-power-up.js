@@ -2,12 +2,7 @@
 
 // Only catalog values cross into CSS; model names and hook payloads never do.
 (function (root) {
-  const FAMILIES = Object.freeze({
-    opus: { color: "#c49aff", tint: "grayscale(1) sepia(1) saturate(4) hue-rotate(235deg)" },
-    sonnet: { color: "#67dcff", tint: "grayscale(1) sepia(1) saturate(4) hue-rotate(155deg)" },
-    haiku: { color: "#8ee99a", tint: "grayscale(1) sepia(1) saturate(4) hue-rotate(75deg)" },
-    gpt: { color: "#77aaff", tint: "grayscale(1) sepia(1) saturate(4) hue-rotate(185deg)" },
-  });
+  const FAMILIES = Object.freeze(["opus", "sonnet", "haiku", "gpt"]);
   const EFFORTS = Object.freeze({ none: 0, minimal: 1, low: 1, medium: 2, high: 3, xhigh: 4, max: 4, ultra: 4 });
   const ACTIVE_STATES = new Set(["thinking", "working", "juggling"]);
 
@@ -18,7 +13,7 @@
 
   function modelFamily(model) {
     if (typeof model !== "string") return null;
-    return ["opus", "sonnet", "haiku", "gpt"].find((family) =>
+    return FAMILIES.find((family) =>
       new RegExp(`(?:^|[-_/])${family}(?:$|[-_/.0-9])`, "i").test(model)) || null;
   }
 
@@ -45,9 +40,9 @@
   }
 
   function appearance(payload) {
-    const family = payload && Object.hasOwn(FAMILIES, payload.family) ? payload.family : null;
+    const family = payload && FAMILIES.includes(payload.family) ? payload.family : null;
     const tier = payload && Number.isInteger(payload.tier) && payload.tier >= 0 && payload.tier <= 4 ? payload.tier : 0;
-    return { family, tier, color: family ? FAMILIES[family].color : "#ffd66b", tint: family ? FAMILIES[family].tint : "" };
+    return { family, tier, color: "", tint: "" };
   }
 
   const api = { normalizeEffort, modelFamily, selectPowerUpSession, resolvePowerUp, appearance };

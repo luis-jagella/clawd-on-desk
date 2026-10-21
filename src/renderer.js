@@ -739,8 +739,20 @@ function applyPetTintToElement(element) {
     && element.classList
     && element.classList.contains("clawd-img");
   if (!isPetObject && !isPetImg) return;
-  const tint = _petTintPayload.id === "none" ? _powerUpAppearance.tint : _petTintPayload.filter;
-  element.style.filter = _petTintSupported ? tint : "";
+  element.style.filter = _petTintSupported ? _petTintPayload.filter : "";
+}
+
+const PET_AURA_BASE_COLORS = Object.freeze({
+  clawd: "#40c4ff",
+  cloudling: "#7a9dff",
+  calico: "#de886d",
+});
+
+function syncPetAuraColor() {
+  const aura = document.getElementById("pet-power-aura");
+  if (!aura) return;
+  aura.style.setProperty("--power-color", PET_AURA_BASE_COLORS[tc.themeId] || "#40c4ff");
+  aura.style.filter = _petTintSupported ? _petTintPayload.filter : "";
 }
 
 function applyPetTintToAllMedia() {
@@ -750,6 +762,7 @@ function applyPetTintToAllMedia() {
 function setPetTintPayload(payload) {
   _petTintPayload = normalizePetTintPayload(payload);
   applyPetTintToAllMedia();
+  syncPetAuraColor();
 }
 
 if (window.electronAPI && typeof window.electronAPI.onPetTintChange === "function") {
@@ -763,8 +776,8 @@ if (window.electronAPI && typeof window.electronAPI.onPetPowerUpChange === "func
     if (aura) {
       aura.dataset.tier = String(_powerUpAppearance.tier);
       aura.dataset.model = _powerUpAppearance.family ? "known" : "unknown";
-      aura.style.setProperty("--power-color", _powerUpAppearance.color);
     }
+    syncPetAuraColor();
     applyPetTintToAllMedia();
   });
 }

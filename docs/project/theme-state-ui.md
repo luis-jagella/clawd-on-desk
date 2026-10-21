@@ -4,11 +4,11 @@ This document holds the state machine, theme system, UI runtime, and platform ca
 
 ## Model power-up (optional)
 
-Settings → Pet → Model power-up enables a model tint. A separate switch controls the reasoning-effort aura, and a source selector can follow any app, Claude Code, or Codex. The last recognized model remains visible between turns; parallel sessions keep the selected active model until that session stops. A subtle model-colored glow remains when the agent does not report effort, without assigning it an invented effort level.
-It is off by default. Opus is violet, Sonnet cyan, Haiku green and GPT blue.
-An explicit theme tint takes precedence over the automatic model tint.
-
-![Opus power-up levels rendered with the Clawd renderer](../../assets/readme/model-power-up-preview.png)
+Settings → Pet → Model power-up enables the effect while preserving the pet's
+configured theme color. A separate switch controls the reasoning-effort aura,
+and a source selector can follow any app, Claude Code, or Codex. The aura uses
+the active theme's base color and applies the same user-selected tint filter as
+the pet. The last reported effort remains visible between turns.
 
 Only visible, active main sessions can update the effect, filtered by the
 selected source app. The selected session's last appearance remains visible

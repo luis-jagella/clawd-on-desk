@@ -1954,7 +1954,7 @@ function syncPetPowerUp(snapshot = powerUpSnapshot) {
       powerUpSessionId = selected.id;
       const current = resolvePowerUp(snapshot, true, displayedState, selected.id, sourceAgentId,
         _settingsController.get("modelPowerUpAuraEnabled") !== false);
-      if (current.family) lastPowerUpAppearance = current;
+      if (current.family || current.tier) lastPowerUpAppearance = current;
     } else {
       powerUpSessionId = null;
     }
