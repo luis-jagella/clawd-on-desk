@@ -752,7 +752,7 @@ function syncPetAuraColor() {
   const aura = document.getElementById("pet-power-aura");
   if (!aura) return;
   aura.style.setProperty("--power-color", PET_AURA_BASE_COLORS[tc.themeId] || "#40c4ff");
-  aura.style.filter = _petTintSupported ? _petTintPayload.filter : "";
+  aura.style.filter = `${_petTintSupported ? _petTintPayload.filter : ""} blur(8px)`.trim();
 }
 
 function applyPetTintToAllMedia() {
