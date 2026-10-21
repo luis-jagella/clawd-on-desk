@@ -8,6 +8,7 @@
     "size",
     "keepSizeAcrossDisplays",
     "testReactionsEnabled",
+    "modelPowerUpEnabled",
     "allowEdgePinning",
     "disableMiniMode",
     "freeRoam",
@@ -478,6 +479,11 @@
     ]));
 
     parent.appendChild(helpers.buildSection(t("sectionPetReactions"), [
+      helpers.buildSwitchRow({
+        key: "modelPowerUpEnabled",
+        labelKey: "rowModelPowerUp",
+        descKey: "rowModelPowerUpDesc",
+      }),
       helpers.buildSwitchRow({
         key: "testReactionsEnabled",
         labelKey: "rowTestReactions",

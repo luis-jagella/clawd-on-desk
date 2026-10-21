@@ -67,6 +67,7 @@ let queuedSystemWakeReplayTimer = null;
 let _lowPowerStaticImageOverrides = {};
 let _petTintPayload = { id: "none", filter: "" };
 let _petTintSupported = false;
+let _powerUpAppearance = { family: null, tier: 0, tint: "", color: "#ffd66b" };
 const ACCESSORY_SLOT_NAMES = Object.freeze(["head", "mouth"]);
 function createAccessorySlotRuntime(element) {
   return {
@@ -738,7 +739,8 @@ function applyPetTintToElement(element) {
     && element.classList
     && element.classList.contains("clawd-img");
   if (!isPetObject && !isPetImg) return;
-  element.style.filter = _petTintSupported ? _petTintPayload.filter : "";
+  const tint = _petTintPayload.id === "none" ? _powerUpAppearance.tint : _petTintPayload.filter;
+  element.style.filter = _petTintSupported ? tint : "";
 }
 
 function applyPetTintToAllMedia() {
@@ -752,6 +754,18 @@ function setPetTintPayload(payload) {
 
 if (window.electronAPI && typeof window.electronAPI.onPetTintChange === "function") {
   window.electronAPI.onPetTintChange(setPetTintPayload);
+}
+
+if (window.electronAPI && typeof window.electronAPI.onPetPowerUpChange === "function") {
+  window.electronAPI.onPetPowerUpChange((payload) => {
+    _powerUpAppearance = window.ClawdPowerUp.appearance(payload);
+    const aura = document.getElementById("pet-power-aura");
+    if (aura) {
+      aura.dataset.tier = String(_powerUpAppearance.tier);
+      aura.style.setProperty("--power-color", _powerUpAppearance.color);
+    }
+    applyPetTintToAllMedia();
+  });
 }
 
 // ── Pet accessory wardrobe ──
@@ -2509,6 +2523,8 @@ function renderStateFile(requestOrState, legacySvg) {
   // Track the latest state name so the Kimi permission pulse can re-trigger
   // swapToFile() with the matching state for eye-tracking decisions.
   currentState = state;
+  const powerAura = document.getElementById("pet-power-aura");
+  if (powerAura) powerAura.hidden = !["thinking", "working", "juggling"].includes(state);
   const requestedSvg = svg;
   const lowPowerStaticImageOverride = resolveLowPowerStaticImageOverride(state, requestedSvg);
   const effectiveSvg = lowPowerStaticImageOverride || requestedSvg;

@@ -2,6 +2,35 @@
 
 This document holds the state machine, theme system, UI runtime, and platform caveats that were previously embedded in the root `AGENTS.md`.
 
+## Model power-up (optional)
+
+Settings → Pet → Model power-up enables a model tint and a reasoning-effort aura.
+It is off by default. Opus is violet, Sonnet cyan, Haiku green and GPT blue.
+An explicit theme tint takes precedence over the automatic model tint.
+
+![Opus power-up levels rendered with the Clawd renderer](../../assets/readme/model-power-up-preview.png)
+
+Only visible, active main sessions drive the effect. The pet keeps its normal
+thinking/tool/approval animations. Idle, permission, error and sleep visuals do
+not show an aura. The most recently updated session matching the displayed
+active state wins; session id breaks ties deterministically.
+
+Reported effort controls four aura levels: low/minimal, medium, high, and
+xhigh/max/ultra. The last level adds golden sparks and a slow opacity pulse;
+reduced-motion mode disables the pulse. Effects use the existing viewport and
+do not change hitboxes, window sizes, assets, or approval behavior.
+
+Codex's local rollout monitor reads `turn_context.model` and `turn_context.effort`.
+Accepted lifecycle callbacks preserve these as optional session metadata. When
+official hooks own the lifecycle, a fence-accepted suppressed callback may
+annotate only its existing local Codex session without extending its lifetime.
+HTTP integrations may supply an optional `effort` field. The field is normalized
+to a fixed vocabulary; unknown or cleared effort yields no aura. Model changes
+clear previous effort unless the new update explicitly supplies it.
+Claude hooks currently provide model names, but do not guarantee effort data:
+Clawd does not infer effort from account settings, model tier, or tool activity.
+No extra API requests, transcript polling, or persistent activity metrics are added.
+
 ## Linux AppImage Runtime Lifetime
 
 AppImage 的 FUSE wrapper 被提前终止时，Electron 仍可能在退出清理中读取挂载内的代码页，触发 SIGBUS（#1048）。Linux `afterPack` 用 `scripts/prepare-appimage-launcher.js` 在生成的 AppRun 路径导出之前接入 `build/appimage-launcher.sh`：仅 FUSE 启动先复制到本次独占、权限 0700 的 `$TMPDIR/clawd-appimage.XXXXXXXX/app`（未设置 TMPDIR 时用 `/tmp`），再启动 Electron。每次启动都需要一份解包大小的可执行临时空间，tmpfs 上会占用内存；复制失败不会启动半成品。空间不足或临时目录挂载为 `noexec` 时，可把 TMPDIR 指向其他可写、可执行的非 FUSE 目录，或手动解包运行。FUSE 的识别比较 `stat -f -c %t` 的 statfs 编号 `65735546`，不比较类型名（coreutils 9.6 起把 `fuseblk` 改报为 `fuse`）；守卫与 TMPDIR 检查必须用同一种判断。
