@@ -85,6 +85,7 @@ html, body {
   transition: opacity 200ms ease;
 }
 #pet-power-aura[data-tier="1"] { opacity: 0.12; }
+#pet-power-aura[data-tier="0"][data-model="known"] { opacity: 0.12; }
 #pet-power-aura[data-tier="2"] { opacity: 0.24; }
 #pet-power-aura[data-tier="3"] { opacity: 0.38; }
 #pet-power-aura[data-tier="4"] {

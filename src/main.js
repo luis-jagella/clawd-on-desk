@@ -1936,11 +1936,28 @@ let repositionSessionHud = () => {};
 let repositionQuotaRing = () => {};
 let syncSessionHudVisibility = () => {};
 let broadcastSessionHudSnapshot = () => {};
-const { resolvePowerUp } = require("./pet-power-up");
+const { resolvePowerUp, selectPowerUpSession } = require("./pet-power-up");
 let powerUpSnapshot = { sessions: [] };
+let powerUpSessionId = null;
+let lastPowerUpAppearance = { family: null, tier: 0 };
 function syncPetPowerUp(snapshot = powerUpSnapshot) {
   powerUpSnapshot = snapshot;
-  sendToRenderer("pet-power-up-change", resolvePowerUp(snapshot, _settingsController.get("modelPowerUpEnabled"), _state.getCurrentState()));
+  const enabled = _settingsController.get("modelPowerUpEnabled");
+  if (!enabled) {
+    powerUpSessionId = null;
+    lastPowerUpAppearance = { family: null, tier: 0 };
+  } else {
+    const displayedState = _state.getCurrentState();
+    const selected = selectPowerUpSession(snapshot, displayedState, powerUpSessionId);
+    if (selected) {
+      powerUpSessionId = selected.id;
+      const current = resolvePowerUp(snapshot, true, displayedState, selected.id);
+      if (current.family) lastPowerUpAppearance = current;
+    } else {
+      powerUpSessionId = null;
+    }
+  }
+  sendToRenderer("pet-power-up-change", lastPowerUpAppearance);
 }
 _settingsController.subscribeKey("modelPowerUpEnabled", () => syncPetPowerUp());
 let sendSessionHudI18n = () => {};

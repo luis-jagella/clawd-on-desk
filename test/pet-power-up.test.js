@@ -1,7 +1,7 @@
 "use strict";
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { resolvePowerUp, appearance, normalizeEffort } = require("../src/pet-power-up");
+const { resolvePowerUp, selectPowerUpSession, appearance, normalizeEffort } = require("../src/pet-power-up");
 const session = (patch = {}) => ({ id: "one", state: "thinking", model: "claude-opus-4-6", updatedAt: 10, ...patch });
 
 test("power-up is opt-in and clears when no visible agent is working", () => {
@@ -36,6 +36,13 @@ test("parallel sessions select the latest active session deterministically", () 
   const sessions = [session({ id: "z", model: "claude-sonnet-4-6" }), session({ id: "a", effort: "high" })];
   assert.deepEqual(resolvePowerUp({ sessions }, true), resolvePowerUp({ sessions: sessions.slice().reverse() }, true));
   assert.equal(resolvePowerUp({ sessions: [session(), session({ updatedAt: 20, model: "claude-haiku-4-5" })] }, true).family, "haiku");
+});
+
+test("preferred active session keeps its model during parallel updates", () => {
+  const sessions = [session({ id: "claude", updatedAt: 10 }), session({ id: "codex", model: "gpt-6.1-sol", updatedAt: 20 })];
+  assert.equal(selectPowerUpSession({ sessions }, "thinking", "claude").id, "claude");
+  assert.equal(resolvePowerUp({ sessions }, true, "thinking", "claude").family, "opus");
+  assert.equal(selectPowerUpSession({ sessions: [sessions[1]] }, "thinking", "claude").id, "codex");
 });
 
 test("untrusted telemetry cannot inject CSS or animation tiers", () => {

@@ -762,6 +762,7 @@ if (window.electronAPI && typeof window.electronAPI.onPetPowerUpChange === "func
     const aura = document.getElementById("pet-power-aura");
     if (aura) {
       aura.dataset.tier = String(_powerUpAppearance.tier);
+      aura.dataset.model = _powerUpAppearance.family ? "known" : "unknown";
       aura.style.setProperty("--power-color", _powerUpAppearance.color);
     }
     applyPetTintToAllMedia();
@@ -2524,7 +2525,6 @@ function renderStateFile(requestOrState, legacySvg) {
   // swapToFile() with the matching state for eye-tracking decisions.
   currentState = state;
   const powerAura = document.getElementById("pet-power-aura");
-  if (powerAura) powerAura.hidden = !["thinking", "working", "juggling"].includes(state);
   const requestedSvg = svg;
   const lowPowerStaticImageOverride = resolveLowPowerStaticImageOverride(state, requestedSvg);
   const effectiveSvg = lowPowerStaticImageOverride || requestedSvg;

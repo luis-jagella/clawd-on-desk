@@ -4,7 +4,7 @@ This document holds the state machine, theme system, UI runtime, and platform ca
 
 ## Model power-up (optional)
 
-Settings → Pet → Model power-up enables a model tint and a reasoning-effort aura.
+Settings → Pet → Model power-up enables a model tint and a reasoning-effort aura. The last recognized model remains visible between turns; parallel sessions keep the selected active model until that session stops. A subtle model-colored glow remains when the agent does not report effort, without assigning it an invented effort level.
 It is off by default. Opus is violet, Sonnet cyan, Haiku green and GPT blue.
 An explicit theme tint takes precedence over the automatic model tint.
 
