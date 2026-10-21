@@ -78,10 +78,12 @@ html, body {
 /* Keep the glow inside the existing viewport; it never owns input or geometry. */
 #pet-power-aura {
   position: absolute;
-  inset: 4% 6%;
+  inset: -10% 6%;
   pointer-events: none;
   opacity: 0;
-  background: radial-gradient(ellipse at 50% 58%, transparent 36%, var(--power-color, #ffd66b) 57%, transparent 72%);
+  background: radial-gradient(ellipse 76% 58% at 50% 52%, transparent 34%, var(--power-color, #ffd66b) 58%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
   transition: opacity 200ms ease;
 }
 #pet-power-aura[data-tier="1"] { opacity: 0.12; }
