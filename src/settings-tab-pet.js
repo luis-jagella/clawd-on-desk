@@ -9,6 +9,7 @@
     "keepSizeAcrossDisplays",
     "testReactionsEnabled",
     "modelPowerUpEnabled",
+    "modelPowerUpAuraEnabled",
     "allowEdgePinning",
     "disableMiniMode",
     "freeRoam",
@@ -484,12 +485,61 @@
         labelKey: "rowModelPowerUp",
         descKey: "rowModelPowerUpDesc",
       }),
+      buildPowerUpSourceRow(),
+      helpers.buildSwitchRow({
+        key: "modelPowerUpAuraEnabled",
+        labelKey: "rowModelPowerUpAura",
+        descKey: "rowModelPowerUpAuraDesc",
+      }),
       helpers.buildSwitchRow({
         key: "testReactionsEnabled",
         labelKey: "rowTestReactions",
         descKey: "rowTestReactionsDesc",
       }),
     ]));
+  }
+
+  async function savePowerUpSource(value) {
+    try {
+      const result = await window.settingsAPI.update("modelPowerUpSource", value);
+      if (result && result.status === "ok") return true;
+      ops.showToast(t("toastSaveFailed") + ((result && result.message) || "unknown error"), { error: true });
+    } catch (err) {
+      ops.showToast(t("toastSaveFailed") + (err && err.message), { error: true });
+    }
+    return false;
+  }
+
+  function buildPowerUpSourceRow() {
+    const row = document.createElement("div");
+    row.className = "row model-power-up-source-row";
+    const text = document.createElement("div");
+    text.className = "row-text";
+    const label = document.createElement("span");
+    label.className = "row-label";
+    label.textContent = t("rowModelPowerUpSource");
+    const description = document.createElement("span");
+    description.className = "row-desc";
+    description.textContent = t("rowModelPowerUpSourceDesc");
+    text.appendChild(label);
+    text.appendChild(description);
+    const controlHost = document.createElement("div");
+    controlHost.className = "row-control";
+    const control = helpers.buildSegmentedRadio({
+      id: "model-power-up-source",
+      value: state.snapshot && state.snapshot.modelPowerUpSource || "auto",
+      ariaLabel: t("rowModelPowerUpSource"),
+      options: [
+        { value: "auto", label: t("modelPowerUpSourceAuto") },
+        { value: "claude-code", label: t("modelPowerUpSourceClaude") },
+        { value: "codex", label: t("modelPowerUpSourceCodex") },
+      ],
+      onChange: savePowerUpSource,
+    });
+    controlHost.appendChild(control.element);
+    row.appendChild(text);
+    row.appendChild(controlHost);
+    return row;
   }
 
   function patchInPlace(changes) {

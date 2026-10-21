@@ -22,10 +22,11 @@
       new RegExp(`(?:^|[-_/])${family}(?:$|[-_/.0-9])`, "i").test(model)) || null;
   }
 
-  function selectPowerUpSession(snapshot, displayedState, preferredId) {
+  function selectPowerUpSession(snapshot, displayedState, preferredId, sourceAgentId = "auto") {
     const sessions = Array.isArray(snapshot && snapshot.sessions) ? snapshot.sessions : [];
     const active = sessions.filter((session) => session && !session.headless
       && !session.hiddenFromHud && ACTIVE_STATES.has(session.state)
+      && (sourceAgentId === "auto" || session.agentId === sourceAgentId)
       && (!displayedState || session.state === displayedState));
     const preferred = active.find((session) => session.id === preferredId);
     if (preferred) return preferred;
@@ -34,13 +35,13 @@
     return active[0] || null;
   }
 
-  function resolvePowerUp(snapshot, enabled, displayedState, preferredId) {
+  function resolvePowerUp(snapshot, enabled, displayedState, preferredId, sourceAgentId = "auto", auraEnabled = true) {
     const neutral = { family: null, tier: 0 };
     if (enabled !== true) return neutral;
-    const session = selectPowerUpSession(snapshot, displayedState, preferredId);
+    const session = selectPowerUpSession(snapshot, displayedState, preferredId, sourceAgentId);
     if (!session) return neutral;
     const effort = normalizeEffort(session.effort);
-    return { family: modelFamily(session.model), tier: effort === null ? 0 : EFFORTS[effort] };
+    return { family: modelFamily(session.model), tier: auraEnabled && effort !== null ? EFFORTS[effort] : 0 };
   }
 
   function appearance(payload) {

@@ -1948,10 +1948,12 @@ function syncPetPowerUp(snapshot = powerUpSnapshot) {
     lastPowerUpAppearance = { family: null, tier: 0 };
   } else {
     const displayedState = _state.getCurrentState();
-    const selected = selectPowerUpSession(snapshot, displayedState, powerUpSessionId);
+    const sourceAgentId = _settingsController.get("modelPowerUpSource") || "auto";
+    const selected = selectPowerUpSession(snapshot, displayedState, powerUpSessionId, sourceAgentId);
     if (selected) {
       powerUpSessionId = selected.id;
-      const current = resolvePowerUp(snapshot, true, displayedState, selected.id);
+      const current = resolvePowerUp(snapshot, true, displayedState, selected.id, sourceAgentId,
+        _settingsController.get("modelPowerUpAuraEnabled") !== false);
       if (current.family) lastPowerUpAppearance = current;
     } else {
       powerUpSessionId = null;
@@ -1960,6 +1962,12 @@ function syncPetPowerUp(snapshot = powerUpSnapshot) {
   sendToRenderer("pet-power-up-change", lastPowerUpAppearance);
 }
 _settingsController.subscribeKey("modelPowerUpEnabled", () => syncPetPowerUp());
+_settingsController.subscribeKey("modelPowerUpAuraEnabled", () => syncPetPowerUp());
+_settingsController.subscribeKey("modelPowerUpSource", () => {
+  powerUpSessionId = null;
+  lastPowerUpAppearance = { family: null, tier: 0 };
+  syncPetPowerUp();
+});
 let sendSessionHudI18n = () => {};
 let getSessionHudReservedOffset = () => 0;
 let getSessionHudWindow = () => null;

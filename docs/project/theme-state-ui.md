@@ -4,18 +4,19 @@ This document holds the state machine, theme system, UI runtime, and platform ca
 
 ## Model power-up (optional)
 
-Settings → Pet → Model power-up enables a model tint and a reasoning-effort aura. The last recognized model remains visible between turns; parallel sessions keep the selected active model until that session stops. A subtle model-colored glow remains when the agent does not report effort, without assigning it an invented effort level.
+Settings → Pet → Model power-up enables a model tint. A separate switch controls the reasoning-effort aura, and a source selector can follow any app, Claude Code, or Codex. The last recognized model remains visible between turns; parallel sessions keep the selected active model until that session stops. A subtle model-colored glow remains when the agent does not report effort, without assigning it an invented effort level.
 It is off by default. Opus is violet, Sonnet cyan, Haiku green and GPT blue.
 An explicit theme tint takes precedence over the automatic model tint.
 
 ![Opus power-up levels rendered with the Clawd renderer](../../assets/readme/model-power-up-preview.png)
 
-Only visible, active main sessions drive the effect. The pet keeps its normal
-thinking/tool/approval animations. Idle, permission, error and sleep visuals do
-not show an aura. The most recently updated session matching the displayed
-active state wins; session id breaks ties deterministically.
+Only visible, active main sessions can update the effect, filtered by the
+selected source app. The selected session's last appearance remains visible
+between turns, while the pet keeps its normal thinking/tool/approval
+animations. Within the selected app, the most recently updated matching
+session wins; session id breaks ties deterministically.
 
-Reported effort controls four aura levels: low/minimal, medium, high, and
+When the aura switch is enabled, reported effort controls four aura levels: low/minimal, medium, high, and
 xhigh/max/ultra. The last level adds golden sparks and a slow opacity pulse;
 reduced-motion mode disables the pulse. Effects use the existing viewport and
 do not change hitboxes, window sizes, assets, or approval behavior.
